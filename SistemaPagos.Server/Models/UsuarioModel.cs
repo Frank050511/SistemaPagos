@@ -21,5 +21,6 @@ using System.ComponentModel.DataAnnotations;
 
     public ICollection<PlanillaModel>? Planillas { get; set; }
     public ICollection<DetallePlanillaModel>? Detalles { get; set; }
+    public ICollection<NotificacionModel>? Notificaciones { get; set; }
 }
 
