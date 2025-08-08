@@ -1,0 +1,6 @@
+@SistemaPagos.Server_HostAddress = http://localhost:5225
+
+GET {{SistemaPagos.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

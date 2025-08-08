@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "sistemapagos.client", "sistemapagos.client\sistemapagos.client.esproj", "{C28A76AC-2C36-9B80-C579-48C6AF34EE46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaPagos.Server", "SistemaPagos.Server\SistemaPagos.Server.csproj", "{47B79BB1-6F0E-487A-85B9-23EC1662B9DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C28A76AC-2C36-9B80-C579-48C6AF34EE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28A76AC-2C36-9B80-C579-48C6AF34EE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C28A76AC-2C36-9B80-C579-48C6AF34EE46}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C28A76AC-2C36-9B80-C579-48C6AF34EE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C28A76AC-2C36-9B80-C579-48C6AF34EE46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C28A76AC-2C36-9B80-C579-48C6AF34EE46}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{47B79BB1-6F0E-487A-85B9-23EC1662B9DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47B79BB1-6F0E-487A-85B9-23EC1662B9DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47B79BB1-6F0E-487A-85B9-23EC1662B9DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47B79BB1-6F0E-487A-85B9-23EC1662B9DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8DBFC5D0-6474-4D9D-8DB0-4310AB5B6655}
+	EndGlobalSection
+EndGlobal
