@@ -21,6 +21,6 @@ public class PlanillaModel
     public UsuarioModel? Usuario { get; set; } 
     public int Id_usuario { get; set; }
 
-   
+   public ICollection<DetallePlanillaModel>? Detalles { get; set; }
 }
 

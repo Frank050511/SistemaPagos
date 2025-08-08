@@ -19,6 +19,7 @@ using System.ComponentModel.DataAnnotations;
     public bool Activo { get; set; } = true;
     public bool Es_admin { get; set; } = false;
 
-
+    public ICollection<PlanillaModel>? Planillas { get; set; }
+    public ICollection<DetallePlanillaModel>? Detalles { get; set; }
 }
 
