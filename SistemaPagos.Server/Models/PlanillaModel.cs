@@ -7,19 +7,19 @@ using System.Globalization;
 public class PlanillaModel
  {
     [Key]
-    public int Id_planilla { get; set; }
+    public int IdPlanilla { get; set; }
 
     [StringLength(30)]
-    public string Nombre_planilla { get; set; } = string.Empty;
+    public string NombrePlanilla { get; set; } = string.Empty;
 
-    public DateTime Fecha_carga { get; set; } = DateTime.Now;
-    public string Ruta_archivo { get; set; } = string.Empty;
+    public DateTime FechaCarga { get; set; } = DateTime.Now;
+    public string RutaArchivo { get; set; } = string.Empty;
     public bool Activo { get; set; } = true;
-    public DateTime Fecha_corte { get; set; }
+    public DateTime FechaCorte { get; set; }
 
-    [ForeignKey("Id_usuario")]
+    [ForeignKey("IdUsuario")]
     public UsuarioModel? Usuario { get; set; } 
-    public int Id_usuario { get; set; }
+    public int IdUsuario { get; set; }
 
    public ICollection<DetallePlanillaModel>? Detalles { get; set; }
     public ICollection<NotificacionModel>? Notificaciones { get; set; }

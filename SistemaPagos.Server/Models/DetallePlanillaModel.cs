@@ -5,20 +5,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class DetallePlanillaModel
 {
     [Key]
-    public int Id_detalle { get; set; }
+    public int IdDetalle { get; set; }
 
     [Range(0.01, double.MaxValue)]
-    public decimal Salario_bruto { get; set; }
+    public decimal SalarioBruto { get; set; }
     public decimal Isss { get; set; }
     public decimal Afp { get; set; }
     public decimal Renta { get; set; }
-    public decimal Salario_neto { get; set; }
+    public decimal SalarioNeto { get; set; }
 
-    [ForeignKey("Id_planilla")]
+    [ForeignKey("IdPlanilla")]
     public PlanillaModel? Planilla { get; set; }
-    public int Id_planilla { get; set; }
+    public int IdPlanilla { get; set; }
 
-    [ForeignKey("Id_usuario")]
+    [ForeignKey("IdUsuario")]
     public UsuarioModel? Usuario { get; set; }
-    public int Id_usuario { get; set; }
+    public int IdUsuario { get; set; }
 }
