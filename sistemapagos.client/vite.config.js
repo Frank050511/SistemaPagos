@@ -6,6 +6,9 @@ import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
 
 const baseFolder =
     env.APPDATA !== undefined && env.APPDATA !== ''
@@ -58,4 +61,11 @@ export default defineConfig({
             cert: fs.readFileSync(certFilePath),
         }
     }
+})
+
+//configuracion de tailwindcss
+export default defineConfig({
+    plugins: [
+        tailwindcss(),
+    ],
 })
