@@ -14,11 +14,11 @@ public class DetallePlanillaModel
     public decimal Renta { get; set; }
     public decimal SalarioNeto { get; set; }
 
-    [ForeignKey("IdPlanilla")]
-    public PlanillaModel? Planilla { get; set; }
+    [ForeignKey("IdPlanilla"), Required]
+    public PlanillaModel Planilla { get; set; } = null!;
     public int IdPlanilla { get; set; }
 
-    [ForeignKey("IdUsuario")]
-    public UsuarioModel? Usuario { get; set; }
+    [ForeignKey("IdUsuario"), Required]
+    public UsuarioModel Usuario { get; set; } = null!;
     public int IdUsuario { get; set; }
 }

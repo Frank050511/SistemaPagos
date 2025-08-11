@@ -6,7 +6,6 @@ import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
 import { env } from 'process';
-import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 
 
@@ -42,7 +41,9 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
+    plugins: [plugin(),
+        tailwindcss()
+    ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -63,9 +64,4 @@ export default defineConfig({
     }
 })
 
-//configuracion de tailwindcss
-export default defineConfig({
-    plugins: [
-        tailwindcss(),
-    ],
-})
+
