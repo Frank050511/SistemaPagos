@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations;
     [StringLength(150)]
     public string Nombre { get; set; } = string.Empty;
 
-    [StringLength(8)]
+    [StringLength(60)]
     public string Clave { get; set; } = string.Empty;
 
     public bool Activo { get; set; } = true;
