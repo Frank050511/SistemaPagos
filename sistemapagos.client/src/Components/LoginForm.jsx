@@ -17,7 +17,7 @@ const LoginForm = () => {
         }
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('https://localhost:7258/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -29,11 +29,20 @@ const LoginForm = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Credenciales invalidas');
+                throw new Error('Credenciales inválidas');
             }
 
-            // Redireccionar si el login es exitoso
-            window.location.href = '/dashboard';
+            const data = await response.json(); // Parsear la respuesta JSON
+
+            
+            localStorage.setItem('token', data.token);
+
+            // Redireccionar según el rol
+            if (data.usuario.EsAdmin) { 
+                window.location.href = '/AdminView';
+            } else {
+                window.location.href = '/EmpleadoView';
+            }
 
         } catch (err) {
             setError(err.message || 'Error al iniciar sesión');

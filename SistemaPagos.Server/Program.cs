@@ -41,6 +41,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
+// Configuración de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        builder => builder
+            .WithOrigins("https://localhost:49957") 
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
 var app = builder.Build();
 
 // Configura el pipeline HTTP
@@ -54,12 +65,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
-
-
-
-// IMPORTANTE: El orden de estos middlewares es crucial
+app.UseCors("AllowReactApp");
+app.UseCors("Allow")
 app.UseAuthentication();
 app.UseAuthorization();
 
