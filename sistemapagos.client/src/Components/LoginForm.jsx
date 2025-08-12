@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const LoginForm = () => {
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -11,41 +13,29 @@ const LoginForm = () => {
         const codigoEmpleado = formData.get('codigoEmpleado');
         const clave = formData.get('clave');
 
-        if (!codigoEmpleado || !clave) {
-            setError('Por favor, ingrese su código de empleado y clave.');
-            return;
-        }
-
         try {
             const response = await fetch('https://localhost:7258/api/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    codigoEmpleado,
-                    clave
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigoEmpleado, clave }),
             });
 
-            if (!response.ok) {
-                throw new Error('Credenciales inválidas');
-            }
+            const data = await response.json();
 
-            const data = await response.json(); // Parsear la respuesta JSON
+            if (!response.ok) throw new Error(data.message || 'Error en login');
+            console.log("Respuesta del servidor:", data);
+            // Guarda datos y redirige
+            // Verificación explícita del tipo de dato
+            const isAdmin = Boolean(data.usuario.esAdmin);
+            console.log("EsAdmin:", isAdmin, typeof isAdmin);
 
-            
             localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.usuario));
 
-            // Redireccionar según el rol
-            if (data.usuario.EsAdmin) { 
-                window.location.href = '/AdminView';
-            } else {
-                window.location.href = '/EmpleadoView';
-            }
+            navigate(isAdmin ? '/admin' : '/empleado');
 
         } catch (err) {
-            setError(err.message || 'Error al iniciar sesión');
+            setError(err.message || 'Credenciales incorrectas');
         }
     };
 

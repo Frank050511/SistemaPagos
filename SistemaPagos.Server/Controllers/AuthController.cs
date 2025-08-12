@@ -74,6 +74,9 @@ public class AuthController : ControllerBase
         if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDto.Clave, usuario.Clave))
             return Unauthorized("Credenciales invalidas");
 
+        Console.WriteLine($"Usuario {usuario.CodigoEmpleado} - EsAdmin: {usuario.EsAdmin}"); // Log para depuración
+
+
         // 2. Generar JWT
         var token = GenerateJwtToken(usuario);
 
@@ -85,7 +88,8 @@ public class AuthController : ControllerBase
             {
                 usuario.IdUsuario,
                 usuario.CodigoEmpleado,
-                usuario.EsAdmin
+                usuario.EsAdmin,
+                usuario.Nombre
             }
         });
     }
