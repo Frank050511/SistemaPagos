@@ -5,8 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using SistemaPagos.Server.Models;
 using System.Text;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -29,7 +27,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-
 // Configuración Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,37 +38,39 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-// Configuración de CORS
+// Configuración de CORS (versión mejorada)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        builder => builder
-            .WithOrigins("https://localhost:49957") 
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins(
+                "https://localhost:49957", // Frontend React
+                "http://localhost:3000"   // Alternativa común para React
+            )
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials());
+            .AllowCredentials();
+    });
 });
 
 var app = builder.Build();
 
 // Configura el pipeline HTTP
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    // En desarrollo, puedes desactivar HTTPS redirection para simplificar
+    // app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowReactApp");
-app.UseCors("Allow")
+app.UseStaticFiles();
+
+// ORDEN CORRECTO DE MIDDLEWARES:
+app.UseRouting();
+app.UseCors(); // Usa la política por defecto que configuramos
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Para servir archivos estáticos (uploads)
-app.UseStaticFiles();
 
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
