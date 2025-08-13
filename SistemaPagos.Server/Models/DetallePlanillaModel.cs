@@ -8,10 +8,20 @@ public class DetallePlanillaModel
     public int IdDetalle { get; set; }
 
     [Range(0.01, double.MaxValue)]
+
+    [Column(TypeName = "decimal(7,2)")]
     public decimal SalarioBruto { get; set; }
+
+    [Column(TypeName = "decimal(7,2)")]
     public decimal Isss { get; set; }
+
+    [Column(TypeName = "decimal(7,2)")]
     public decimal Afp { get; set; }
+
+    [Column(TypeName = "decimal(7,2)")]
     public decimal Renta { get; set; }
+
+    [Column(TypeName = "decimal(7,2)")]
     public decimal SalarioNeto { get; set; }
 
     [ForeignKey("IdPlanilla"), Required]
