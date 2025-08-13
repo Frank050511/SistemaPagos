@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { saveAs } from 'file-saver';
 
-const TablaPlanillas = () => {
+const TablaPlanillas = ({ reloadTrigger }) => {
     const [planillas, setPlanillas] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -10,34 +10,31 @@ const TablaPlanillas = () => {
     const [error, setError] = useState(null);
     const itemsPerPage = 5;
 
-    // Obtener planillas desde la API
-    useEffect(() => {
-        const fetchPlanillas = async () => {
-            try {
-                const response = await fetch('https://localhost:7258/api/planillas', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error al obtener las planillas');
+    const fetchPlanillas = useCallback(async () => {
+        try {
+            const response = await fetch('https://localhost:7258/api/planillas', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
+            });
 
-                const data = await response.json();
-                setPlanillas(Array.isArray(data) ? data : []);
-
-                console.log("Respuesta del servidor:", data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+            if (!response.ok) {
+                throw new Error('Error al obtener las planillas');
             }
-            
-        };
 
-        fetchPlanillas();
+            const data = await response.json();
+            setPlanillas(Array.isArray(data) ? data : []);
+            console.log("Respuesta del servidor:", data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchPlanillas();
+    }, [fetchPlanillas, reloadTrigger]);
 
     // Función para descargar una planilla
     const handleDescargarPlanilla = async (rutaArchivo, nombrePlanilla) => {
@@ -84,7 +81,7 @@ const TablaPlanillas = () => {
     const filteredPlanillas = planillas.filter(planilla => {
         if (!planilla || typeof planilla !== 'object') return false;
 
-        const nombre = planilla.nombre || '';
+        const nombre = planilla.nombrePlanilla || '';
         const fechaCorte = planilla.fechaCorte || '';
 
         return nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||

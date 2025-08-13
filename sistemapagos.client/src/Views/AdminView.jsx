@@ -1,21 +1,14 @@
 import { useState } from 'react';
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import LogoutButton from '../Components/LogoutButton.jsx';
 import TablaPlanillas from '../Components/TablaPlanillas.jsx';
 import { saveAs } from 'file-saver';
-import CargarPlanillaModal from '../Components/CargarPlanillaModal.jsx'; // Importamos el modal
+import CargarPlanillaModal from '../Components/CargarPlanillaModal.jsx';
 
 export default function PlanillasAdmin() {
-    // Datos de ejemplo - en producción deberías obtenerlos de tu API
-    const [planillas, setPlanillas] = useState([
-        { id: 1, nombre: 'Planilla_Enero_2023.xlsx', fechaCorte: '2023-01-31', ruta: '/uploads/planillas/planilla1.xlsx' },
-        // ... otros datos ...
-    ]);
-
     const [isDownloading, setIsDownloading] = useState(false);
     const [error, setError] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [reloadTrigger, setReloadTrigger] = useState(0);
 
     const handleDescargarPlantilla = async () => {
         setIsDownloading(true);
@@ -50,7 +43,7 @@ export default function PlanillasAdmin() {
         }
     };
 
-    const handleUploadPlanilla = async (formData) => {
+    const handleUploadSuccess = async (formData) => {
         try {
             const response = await fetch('https://localhost:7258/api/planillas/cargar', {
                 method: 'POST',
@@ -66,14 +59,12 @@ export default function PlanillasAdmin() {
                 throw new Error(errorData.message || 'Error al cargar la planilla');
             }
 
-            const nuevaPlanilla = await response.json();
-            setPlanillas([...planillas, nuevaPlanilla]);
+            setReloadTrigger(prev => prev + 1);
             setShowUploadModal(false);
             setError(null);
         } catch (err) {
-            console.error('Error al cargar planilla:', err);
             setError(err.message);
-            throw err; // Re-lanzamos el error para que el modal lo maneje
+            throw err;
         }
     };
 
@@ -114,18 +105,17 @@ export default function PlanillasAdmin() {
                         </div>
                     )}
 
-                    <TablaPlanillas />
+                    <TablaPlanillas reloadTrigger={reloadTrigger} />
                 </div>
             </main>
 
-            
             <CargarPlanillaModal
                 isOpen={showUploadModal}
                 onClose={() => {
                     setShowUploadModal(false);
                     setError(null);
                 }}
-                onUpload={handleUploadPlanilla}
+                onUploadSuccess={handleUploadSuccess}
             />
         </div>
     );

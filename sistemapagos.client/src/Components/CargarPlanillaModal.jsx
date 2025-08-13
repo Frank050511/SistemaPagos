@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
-export default function CargarPlanillaModal({ isOpen, onClose, onUpload }) {
+export default function CargarPlanillaModal({ isOpen, onClose, onUploadSuccess }) {
     const [file, setFile] = useState(null)
     const [fechaCorte, setFechaCorte] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -22,7 +22,7 @@ export default function CargarPlanillaModal({ isOpen, onClose, onUpload }) {
             formData.append('Archivo', file)
             formData.append('FechaCorte', fechaCorte)
 
-            await onUpload(formData)
+            await onUploadSuccess(formData)
             onClose()
         } catch (err) {
             console.error('Error al subir planilla:', err)
