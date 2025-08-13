@@ -117,7 +117,7 @@ public class PlanillasController : ControllerBase
 
         return Ok(new { id = planilla.IdPlanilla });
     }
-    // GET: api/planillas
+    // GET: api/planillas manda a llamar a las plantillas
     [HttpGet]
     public async Task<IActionResult> GetPlanillas()
     {
@@ -135,7 +135,7 @@ public class PlanillasController : ControllerBase
         return Ok(planillas);
     }
 
-    // GET: api/planillas/descargar
+    // GET: api/planillas/descargar se usa para descargar la planilla
     [HttpGet("descargar")]
     public IActionResult DescargarPlanilla([FromQuery] string ruta)
     {
@@ -146,7 +146,7 @@ public class PlanillasController : ControllerBase
         return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Path.GetFileName(ruta));
     }
 
-    // DELETE: api/planillas/{id}
+    // DELETE: api/planillas/{id} elimina la planilla de la vista
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePlanilla(int id)
     {

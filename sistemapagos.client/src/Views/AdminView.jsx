@@ -114,7 +114,7 @@ export default function PlanillasAdmin() {
                         </div>
                     )}
 
-                    <TablaPlanillas planillas={planillas} />
+                    <TablaPlanillas />
                 </div>
             </main>
 

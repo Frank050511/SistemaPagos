@@ -25,12 +25,15 @@ const TablaPlanillas = () => {
                 }
 
                 const data = await response.json();
-                setPlanillas(data);
+                setPlanillas(Array.isArray(data) ? data : []);
+
+                console.log("Respuesta del servidor:", data);
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
+            
         };
 
         fetchPlanillas();
@@ -77,11 +80,16 @@ const TablaPlanillas = () => {
         }
     };
 
-    // Filtrar planillas según el término de búsqueda
-    const filteredPlanillas = planillas.filter(planilla =>
-        planilla.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        planilla.fechaCorte.includes(searchTerm)
-    );
+    // Filtrar planillas de manera segura
+    const filteredPlanillas = planillas.filter(planilla => {
+        if (!planilla || typeof planilla !== 'object') return false;
+
+        const nombre = planilla.nombre || '';
+        const fechaCorte = planilla.fechaCorte || '';
+
+        return nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            fechaCorte.includes(searchTerm);
+    });
 
     // Calcular el total de páginas
     const totalPages = Math.ceil(filteredPlanillas.length / itemsPerPage);
@@ -92,8 +100,8 @@ const TablaPlanillas = () => {
         currentPage * itemsPerPage
     );
 
-    if (loading) return <div>Cargando planillas...</div>;
-    if (error) return <div className="text-red-500">Error: {error}</div>;
+    if (loading) return <div className="p-4 text-center">Cargando planillas...</div>;
+    if (error) return <div className="p-4 text-red-500 text-center">Error: {error}</div>;
 
     return (
         <div className="space-y-4">
@@ -133,12 +141,12 @@ const TablaPlanillas = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {currentPlanillas.length > 0 ? (
                             currentPlanillas.map((planilla) => (
-                                <tr key={planilla.id}>
+                                <tr key={planilla.idPlanilla}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {planilla.nombre}
+                                        {planilla.nombrePlanilla || 'Sin nombre'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(planilla.fechaCorte).toLocaleDateString()}
+                                        {planilla.fechaCorte ? new Date(planilla.fechaCorte).toLocaleDateString() : 'Sin fecha'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <div className="flex space-x-2">
@@ -173,92 +181,92 @@ const TablaPlanillas = () => {
             {totalPages > 1 && (
                 <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
                     {/* ... (código de paginación existente) ... */}
-                    
-                            <div className="flex flex-1 justify-between sm:hidden">
+
+                    <div className="flex flex-1 justify-between sm:hidden">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        >
+                            Anterior
+                        </button>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                    <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                        <div>
+                            <p className="text-sm text-gray-700">
+                                Mostrando <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> a{' '}
+                                <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredPlanillas.length)}</span> de{' '}
+                                <span className="font-medium">{filteredPlanillas.length}</span> resultados
+                            </p>
+                        </div>
+                        <div>
+                            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                <button
+                                    onClick={() => setCurrentPage(1)}
+                                    disabled={currentPage === 1}
+                                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                >
+                                    <span className="sr-only">Primera</span>
+                                    &laquo;
+                                </button>
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
-                                    className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    className="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                                 >
-                                    Anterior
+                                    <span className="sr-only">Anterior</span>
+                                    &lsaquo;
                                 </button>
+
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNum;
+                                    if (totalPages <= 5) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage <= 3) {
+                                        pageNum = i + 1;
+                                    } else if (currentPage >= totalPages - 2) {
+                                        pageNum = totalPages - 4 + i;
+                                    } else {
+                                        pageNum = currentPage - 2 + i;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => setCurrentPage(pageNum)}
+                                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'}`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
+
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}
-                                    className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                    className="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                                 >
-                                    Siguiente
+                                    <span className="sr-only">Siguiente</span>
+                                    &rsaquo;
                                 </button>
-                            </div>
-                            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-700">
-                                        Mostrando <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> a{' '}
-                                        <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredPlanillas.length)}</span> de{' '}
-                                        <span className="font-medium">{filteredPlanillas.length}</span> resultados
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                                        <button
-                                            onClick={() => setCurrentPage(1)}
-                                            disabled={currentPage === 1}
-                                            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                        >
-                                            <span className="sr-only">Primera</span>
-                                            &laquo;
-                                        </button>
-                                        <button
-                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                            disabled={currentPage === 1}
-                                            className="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                        >
-                                            <span className="sr-only">Anterior</span>
-                                            &lsaquo;
-                                        </button>
-
-                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                            let pageNum;
-                                            if (totalPages <= 5) {
-                                                pageNum = i + 1;
-                                            } else if (currentPage <= 3) {
-                                                pageNum = i + 1;
-                                            } else if (currentPage >= totalPages - 2) {
-                                                pageNum = totalPages - 4 + i;
-                                            } else {
-                                                pageNum = currentPage - 2 + i;
-                                            }
-
-                                            return (
-                                                <button
-                                                    key={pageNum}
-                                                    onClick={() => setCurrentPage(pageNum)}
-                                                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'}`}
-                                                >
-                                                    {pageNum}
-                                                </button>
-                                            );
-                                        })}
-
-                                        <button
-                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                            disabled={currentPage === totalPages}
-                                            className="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                        >
-                                            <span className="sr-only">Siguiente</span>
-                                            &rsaquo;
-                                        </button>
-                                        <button
-                                            onClick={() => setCurrentPage(totalPages)}
-                                            disabled={currentPage === totalPages}
-                                            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                                        >
-                                            <span className="sr-only">Última</span>
-                                            &raquo;
-                                        </button>
-                                    </nav>
-                                </div>
-                            </div>
+                                <button
+                                    onClick={() => setCurrentPage(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                >
+                                    <span className="sr-only">Última</span>
+                                    &raquo;
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
