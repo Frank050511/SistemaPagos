@@ -88,7 +88,7 @@ public class PlanillasController : ControllerBase
         }
     }
 
-    // POST: api/planillas/cargar
+    // Se usa para poder subir una planilla al sistema
     [HttpPost("cargar")]
     public async Task<IActionResult> CargarPlanilla([FromForm] PlanillaCargaDto dto)
     {
@@ -116,6 +116,49 @@ public class PlanillasController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(new { id = planilla.IdPlanilla });
+    }
+    // GET: api/planillas
+    [HttpGet]
+    public async Task<IActionResult> GetPlanillas()
+    {
+        var planillas = await _context.Planillas
+            .Where(p => p.Activo)
+            .Select(p => new {
+                p.IdPlanilla,
+                p.NombrePlanilla,
+                p.FechaCorte,
+                p.RutaArchivo,
+                FechaCarga = p.FechaCarga.ToString("yyyy-MM-dd")
+            })
+            .ToListAsync();
+
+        return Ok(planillas);
+    }
+
+    // GET: api/planillas/descargar
+    [HttpGet("descargar")]
+    public IActionResult DescargarPlanilla([FromQuery] string ruta)
+    {
+        if (!System.IO.File.Exists(ruta))
+            return NotFound("Archivo no encontrado");
+
+        var fileStream = System.IO.File.OpenRead(ruta);
+        return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Path.GetFileName(ruta));
+    }
+
+    // DELETE: api/planillas/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePlanilla(int id)
+    {
+        var planilla = await _context.Planillas.FindAsync(id);
+        if (planilla == null)
+            return NotFound();
+
+        // Marcamos como inactivo en lugar de borrar físicamente
+        planilla.Activo = false;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 
     private async Task<List<DetallePlanillaModel>> _ProcesarExcel(IFormFile archivo)

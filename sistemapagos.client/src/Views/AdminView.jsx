@@ -118,7 +118,7 @@ export default function PlanillasAdmin() {
                 </div>
             </main>
 
-            {/* Modal para subir planillas */}
+            
             <CargarPlanillaModal
                 isOpen={showUploadModal}
                 onClose={() => {
