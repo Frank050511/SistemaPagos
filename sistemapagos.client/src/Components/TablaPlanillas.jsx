@@ -40,7 +40,7 @@ const TablaPlanillas = () => {
     }, []);
 
     // Función para descargar una planilla
-    const handleDescargarPlanilla = async (rutaArchivo, nombreArchivo) => {
+    const handleDescargarPlanilla = async (rutaArchivo, nombrePlanilla) => {
         try {
             const response = await fetch(`https://localhost:7258/api/planillas/descargar?ruta=${encodeURIComponent(rutaArchivo)}`, {
                 headers: {
@@ -53,16 +53,16 @@ const TablaPlanillas = () => {
             }
 
             const blob = await response.blob();
-            saveAs(blob, nombreArchivo);
+            saveAs(blob, nombrePlanilla);
         } catch (err) {
             setError(err.message);
         }
     };
 
     // Función para eliminar una planilla
-    const handleEliminarPlanilla = async (id) => {
+    const handleEliminarPlanilla = async (idPlanilla) => {
         try {
-            const response = await fetch(`https://localhost:7258/api/planillas/${id}`, {
+            const response = await fetch(`https://localhost:7258/api/planillas/${idPlanilla}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -74,7 +74,7 @@ const TablaPlanillas = () => {
             }
 
             // Actualizar la lista de planillas
-            setPlanillas(planillas.filter(p => p.id !== id));
+            setPlanillas(prevPlanillas => prevPlanillas.filter(p => p.idPlanilla !== idPlanilla));
         } catch (err) {
             setError(err.message);
         }
@@ -151,13 +151,13 @@ const TablaPlanillas = () => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <div className="flex space-x-2">
                                             <button
-                                                onClick={() => handleDescargarPlanilla(planilla.rutaArchivo, planilla.nombre)}
+                                                onClick={() => handleDescargarPlanilla(planilla.rutaArchivo, planilla.nombrePlanilla)}
                                                 className="text-indigo-600 hover:text-indigo-900"
                                             >
                                                 Descargar
                                             </button>
                                             <button
-                                                onClick={() => handleEliminarPlanilla(planilla.id)}
+                                                onClick={() => handleEliminarPlanilla(planilla.idPlanilla)}
                                                 className="text-red-600 hover:text-red-900"
                                             >
                                                 Eliminar
