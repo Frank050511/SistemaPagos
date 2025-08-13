@@ -4,16 +4,18 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import LogoutButton from '../Components/LogoutButton.jsx';
 import TablaPlanillas from '../Components/TablaPlanillas.jsx';
 import { saveAs } from 'file-saver';
+import CargarPlanillaModal from '../Components/CargarPlanillaModal.jsx'; // Importamos el modal
 
 export default function PlanillasAdmin() {
-    // Datos de ejemplo
-    const planillas = [
+    // Datos de ejemplo - en producción deberías obtenerlos de tu API
+    const [planillas, setPlanillas] = useState([
         { id: 1, nombre: 'Planilla_Enero_2023.xlsx', fechaCorte: '2023-01-31', ruta: '/uploads/planillas/planilla1.xlsx' },
         // ... otros datos ...
-    ];
+    ]);
 
     const [isDownloading, setIsDownloading] = useState(false);
     const [error, setError] = useState(null);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
     const handleDescargarPlantilla = async () => {
         setIsDownloading(true);
@@ -35,8 +37,6 @@ export default function PlanillasAdmin() {
             }
 
             const blob = await response.blob();
-
-            // Verificación adicional del blob
             if (blob.size === 0) {
                 throw new Error('El archivo recibido está vacío');
             }
@@ -47,6 +47,33 @@ export default function PlanillasAdmin() {
             setError(err.message);
         } finally {
             setIsDownloading(false);
+        }
+    };
+
+    const handleUploadPlanilla = async (formData) => {
+        try {
+            const response = await fetch('https://localhost:7258/api/planillas/cargar', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: formData,
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al cargar la planilla');
+            }
+
+            const nuevaPlanilla = await response.json();
+            setPlanillas([...planillas, nuevaPlanilla]);
+            setShowUploadModal(false);
+            setError(null);
+        } catch (err) {
+            console.error('Error al cargar planilla:', err);
+            setError(err.message);
+            throw err; // Re-lanzamos el error para que el modal lo maneje
         }
     };
 
@@ -74,6 +101,7 @@ export default function PlanillasAdmin() {
                         </button>
 
                         <button
+                            onClick={() => setShowUploadModal(true)}
                             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors"
                         >
                             Agregar planilla
@@ -89,6 +117,16 @@ export default function PlanillasAdmin() {
                     <TablaPlanillas planillas={planillas} />
                 </div>
             </main>
+
+            {/* Modal para subir planillas */}
+            <CargarPlanillaModal
+                isOpen={showUploadModal}
+                onClose={() => {
+                    setShowUploadModal(false);
+                    setError(null);
+                }}
+                onUpload={handleUploadPlanilla}
+            />
         </div>
     );
 }

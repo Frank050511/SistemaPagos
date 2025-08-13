@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
-export default function PlanillaUploadModal({ isOpen, onClose, onUpload }) {
+export default function CargarPlanillaModal({ isOpen, onClose, onUpload }) {
     const [file, setFile] = useState(null)
     const [fechaCorte, setFechaCorte] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
