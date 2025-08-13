@@ -24,55 +24,67 @@ public class PlanillasController : ControllerBase
     [HttpGet("plantilla")]
     public IActionResult DescargarPlantilla()
     {
-        using (var workbook = new XLWorkbook())
+        try
         {
-            var worksheet = workbook.Worksheets.Add("PlantillaBoletas");
-
-            // Encabezados
-            var headers = new string[] {
-                "CodigoEmpleado",
-                "NombreEmpleado",
-                "FechaCorte",
-                "SalarioBruto",
-                "ISSS",
-                "AFP",
-                "Renta",
-                "SalarioNeto"
-            };
-
-            for (int i = 0; i < headers.Length; i++)
+            using (var memoryStream = new MemoryStream())
             {
-                worksheet.Cell(1, i + 1).Value = headers[i];
-                worksheet.Cell(1, i + 1).Style.Font.Bold = true;
-            }
+                // Crear libro de trabajo
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("PlantillaBoletas");
 
-            // Datos de ejemplo
-            worksheet.Cell(2, 1).Value = "EMP001";
-            worksheet.Cell(2, 2).Value = "Juan Pérez";
-            worksheet.Cell(2, 3).Value = DateTime.Now.ToString("yyyy-MM-dd");
-            worksheet.Cell(2, 4).Value = 1000.00;
-            worksheet.Cell(2, 5).Value = 30.00;
-            worksheet.Cell(2, 6).Value = 72.50;
-            worksheet.Cell(2, 7).Value = 100.00;
-            worksheet.Cell(2, 8).Value = 797.50;
+                    // Encabezados
+                    var headers = new string[] {
+                        "CodigoEmpleado", "NombreEmpleado", "FechaCorte",
+                        "SalarioBruto", "ISSS", "AFP", "Renta", "SalarioNeto"
+                    };
 
-            // Formato de tabla
-            var range = worksheet.Range(1, 1, 2, headers.Length);
-            var table = range.CreateTable();
-            table.Theme = XLTableTheme.TableStyleLight10;
+                    // Formato de encabezados
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        var cell = worksheet.Cell(1, i + 1);
+                        cell.Value = headers[i];
+                        cell.Style.Font.Bold = true;
+                        cell.Style.Fill.BackgroundColor = XLColor.LightGray;
+                    }
 
-            // Autoajustar columnas
-            worksheet.Columns().AdjustToContents();
+                    // Datos de ejemplo (fila 2)
+                    worksheet.Cell(2, 1).Value = "EMP001";
+                    worksheet.Cell(2, 2).Value = "Juan Pérez";
+                    worksheet.Cell(2, 3).Value = DateTime.Now.ToString("yyyy-MM-dd");
+                    worksheet.Cell(2, 4).Value = 1000.00;
+                    worksheet.Cell(2, 5).Value = 30.00;
+                    worksheet.Cell(2, 6).Value = 72.50;
+                    worksheet.Cell(2, 7).Value = 100.00;
+                    worksheet.Cell(2, 8).Value = 797.50;
 
-            using (var stream = new MemoryStream())
-            {
-                workbook.SaveAs(stream);
+                    // Formato de números
+                    worksheet.Column(4).Style.NumberFormat.Format = "$#,##0.00";
+                    worksheet.Column(5).Style.NumberFormat.Format = "$#,##0.00";
+                    worksheet.Column(6).Style.NumberFormat.Format = "$#,##0.00";
+                    worksheet.Column(7).Style.NumberFormat.Format = "$#,##0.00";
+                    worksheet.Column(8).Style.NumberFormat.Format = "$#,##0.00";
+
+                    // Autoajustar columnas
+                    worksheet.Columns().AdjustToContents();
+
+                    // Guardar en el MemoryStream
+                    workbook.SaveAs(memoryStream);
+                }
+
+                memoryStream.Position = 0; // Resetear posición
+
+                // Devolver archivo
                 return File(
-                    stream.ToArray(),
+                    memoryStream.ToArray(),
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "Plantilla_Boletas.xlsx"
                 );
             }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error al generar plantilla: {ex.Message}");
         }
     }
 
