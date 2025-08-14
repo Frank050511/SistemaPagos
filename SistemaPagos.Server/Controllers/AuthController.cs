@@ -26,6 +26,7 @@ public class AuthController : ControllerBase
     [HttpPost("registrar")]
     public async Task<IActionResult> Registrar([FromBody] RegistrarUsuarioDto registrarDto)
     {
+        Console.WriteLine($"Correo recibido: {registrarDto.Correo}");
         // Valida si el código de empleado ya existe
         if (await _context.Usuarios.AnyAsync(u => u.CodigoEmpleado == registrarDto.CodigoEmpleado))
         {
@@ -45,7 +46,8 @@ public class AuthController : ControllerBase
             Nombre = registrarDto.Nombre,
             Clave = BCrypt.Net.BCrypt.HashPassword(registrarDto.Clave), // hasheamos la clave para que no sea visible en la base de datos
             Activo = true,
-            EsAdmin = registrarDto.EsAdmin
+            EsAdmin = registrarDto.EsAdmin,
+            Correo=registrarDto.Correo?.Trim()
         };
 
         // Guardamos en la base de datos los datos del usuario creado
@@ -55,6 +57,9 @@ public class AuthController : ControllerBase
         // Genera un token JWT para el usuario recién registrado
         var token = GenerateJwtToken(usuario);
 
+
+        Console.WriteLine($"Correo recibido: {registrarDto.Correo}");
+        Console.WriteLine($"Correo a guardar: {usuario.Correo}");
         // Retornamos la respuesta para confirmar el registro y el token exitoso
         return Ok(new
         {
@@ -64,8 +69,10 @@ public class AuthController : ControllerBase
                 usuario.IdUsuario,
                 usuario.CodigoEmpleado,
                 usuario.Nombre,
-                usuario.EsAdmin
+                usuario.EsAdmin,
+                usuario.Correo
             }
+
         });
     }
 
@@ -141,4 +148,8 @@ public class RegistrarUsuarioDto
     public required string Clave { get; set; }
 
     public bool EsAdmin { get; set; } = false;
+
+    [StringLength(100)]
+    [EmailAddress]
+    public string Correo { get; set; } = string.Empty;
 }
