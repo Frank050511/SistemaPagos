@@ -33,7 +33,7 @@ export default function CargarPlanillaModal({ isOpen, onClose, onUploadSuccess }
     }
 
     return (
-        <Transition appear show={isOpen} as={Fragment}> {/* Transition para animar la aparición del modal utilizado con tailwind*/} }
+        <Transition appear show={isOpen} as={Fragment}> {/* Transition para animar la aparición del modal utilizado con tailwind*/} 
             <Dialog as="div" className="relative z-10" onClose={onClose}>
                 <Transition.Child
                     as={Fragment}
