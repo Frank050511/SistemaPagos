@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using SistemaPagos.Server.Services;
 
 [Authorize(Roles = "admin")]
 [Route("api/[controller]")]
@@ -13,11 +14,13 @@ public class PlanillasController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly IWebHostEnvironment _env;
+    private readonly IEmailService _emailService;
 
-    public PlanillasController(ApplicationDbContext context, IWebHostEnvironment env)
+    public PlanillasController(ApplicationDbContext context, IWebHostEnvironment env, IEmailService emailService)
     {
         _context = context;
         _env = env;
+        _emailService = emailService;
     }
 
     // este endpoint es el que se encarga de generar la plantilla utilizando ClosedXML y descargarla
@@ -115,6 +118,24 @@ public class PlanillasController : ControllerBase
 
         _context.Planillas.Add(planilla);
         await _context.SaveChangesAsync();
+
+        // Obtener correos de los usuarios afectados
+        var correos = await _context.Detalles
+            .Where(d => d.Planilla.IdPlanilla == planilla.IdPlanilla)
+            .Select(d => d.Usuario.Correo)
+            .Where(c => !string.IsNullOrEmpty(c))
+            .Distinct()
+            .ToListAsync();
+
+        // Enviar correos (en segundo plano)
+        foreach (var correo in correos)
+        {
+            _ = _emailService.EnviarCorreoAsync(
+                correo!,
+                "Nueva boleta de pago disponible",
+                $"<p>Se ha cargado una nueva boleta para el período {planilla.FechaCorte:MMMM yyyy}</p>"
+            );
+        }
 
         return Ok(new { id = planilla.IdPlanilla });
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SistemaPagos.Server.Models;
+using SistemaPagos.Server.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configuración Swagger 
 builder.Services.AddEndpointsApiExplorer();

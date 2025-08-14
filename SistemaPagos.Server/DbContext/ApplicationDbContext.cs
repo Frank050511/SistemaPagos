@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
         public DbSet<UsuarioModel> Usuarios { get; set; } 
        public DbSet<PlanillaModel> Planillas { get; set; } 
         public DbSet<DetallePlanillaModel> Detalles { get; set; } 
-        public DbSet<NotificacionModel> Notificaciones { get; set; }
+        
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,20 +36,6 @@ public class ApplicationDbContext : DbContext
             .WithMany(usuario => usuario.Detalles)
             .HasForeignKey(detalles => detalles.IdUsuario)
             .OnDelete(DeleteBehavior.Restrict);
-
-        //relacion entre Notificacion y Usuario
-        modelBuilder.Entity<NotificacionModel>()
-            .HasOne(notificaciones => notificaciones.Usuario)
-            .WithMany(usuario => usuario.Notificaciones)
-            .HasForeignKey(notificaciones => notificaciones.IdUsuario)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        //relacion entre Notificacion y Planilla
-        modelBuilder.Entity<NotificacionModel>()
-            .HasOne(notificaciones => notificaciones.Planilla)
-            .WithMany(planilla => planilla.Notificaciones)
-            .HasForeignKey(notificaciones => notificaciones.IdPlanilla)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 
 

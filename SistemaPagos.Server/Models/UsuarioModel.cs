@@ -18,11 +18,15 @@ using System.ComponentModel.DataAnnotations;
     [StringLength(60)]
     public string Clave { get; set; } = string.Empty;
 
+    [StringLength(100)]
+    [EmailAddress]
+    public string? Correo { get; set; }
+
     public bool Activo { get; set; } = true;
     public bool EsAdmin { get; set; } = false;
 
     public ICollection<PlanillaModel>? Planillas { get; set; }
     public ICollection<DetallePlanillaModel>? Detalles { get; set; }
-    public ICollection<NotificacionModel>? Notificaciones { get; set; }
+    
 }
 

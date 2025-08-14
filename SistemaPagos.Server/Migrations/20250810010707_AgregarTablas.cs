@@ -95,37 +95,6 @@ namespace SistemaPagos.Server.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "Notificaciones",
-                columns: table => new
-                {
-                    IdNotificacion = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Mensaje = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FechaEnvio = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Leida = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    IdUsuario = table.Column<int>(type: "int", nullable: false),
-                    IdPlanilla = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notificaciones", x => x.IdNotificacion);
-                    table.ForeignKey(
-                        name: "FK_Notificaciones_Planillas_IdPlanilla",
-                        column: x => x.IdPlanilla,
-                        principalTable: "Planillas",
-                        principalColumn: "IdPlanilla",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Notificaciones_Usuarios_IdUsuario",
-                        column: x => x.IdUsuario,
-                        principalTable: "Usuarios",
-                        principalColumn: "IdUsuario",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Detalles_IdPlanilla",
                 table: "Detalles",
@@ -134,16 +103,6 @@ namespace SistemaPagos.Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Detalles_IdUsuario",
                 table: "Detalles",
-                column: "IdUsuario");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notificaciones_IdPlanilla",
-                table: "Notificaciones",
-                column: "IdPlanilla");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notificaciones_IdUsuario",
-                table: "Notificaciones",
                 column: "IdUsuario");
 
             migrationBuilder.CreateIndex(
@@ -157,9 +116,6 @@ namespace SistemaPagos.Server.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Detalles");
-
-            migrationBuilder.DropTable(
-                name: "Notificaciones");
 
             migrationBuilder.DropTable(
                 name: "Planillas");
