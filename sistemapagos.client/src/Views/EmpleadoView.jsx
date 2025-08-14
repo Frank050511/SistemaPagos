@@ -1,4 +1,4 @@
-// ... resto de imports
+ï»¿// ... resto de imports
 import { useState, useEffect, useCallback } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -57,7 +57,7 @@ export default function Empleado() {
     // Agrupar por Corte
     const groupByDate = (boletas) => {
         return boletas.reduce((acc, boleta) => {
-            const dateKey = boleta.corte; // Ojo con minúscula si backend devuelve camelCase
+            const dateKey = boleta.corte; // Ojo con minÃºscula si backend devuelve camelCase
             if (!acc[dateKey]) {
                 acc[dateKey] = [];
             }
@@ -78,12 +78,12 @@ export default function Empleado() {
             </header>
 
             <main className="mx-auto max-w-7xl px-4 py-6">
-                {/* Formulario búsqueda */}
+                {/* Formulario bÃºsqueda */}
                 <div className="bg-gray-700 p-4 rounded-lg mb-6">
                     <form onSubmit={handleSearch} className="flex flex-wrap gap-4">
                         <div>
                             <label htmlFor="anio" className="block text-sm font-medium text-white mb-1">
-                                Año
+                                AÃ±o
                             </label>
                             <input
                                 type="number"
@@ -135,7 +135,7 @@ export default function Empleado() {
                                     <table className="min-w-max bg-white">
                                         <thead className="bg-gray-100">
                                             <tr>
-                                                <th className="px-4 py-2 border">Código Empleado</th>
+                                                <th className="px-4 py-2 border">CÃ³digo Empleado</th>
                                                 <th className="px-4 py-2 border">Nombre</th>
                                                 <th className="px-4 py-2 border">Salario Bruto</th>
                                                 <th className="px-4 py-2 border">ISSS</th>

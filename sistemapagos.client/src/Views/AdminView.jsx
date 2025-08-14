@@ -1,4 +1,4 @@
-import { useState } from 'react';
+Ôªøimport { useState } from 'react';
 import LogoutButton from '../Components/LogoutButton.jsx';
 import TablaPlanillas from '../Components/TablaPlanillas.jsx';
 import { saveAs } from 'file-saver';
@@ -31,7 +31,7 @@ export default function PlanillasAdmin() {
 
             const blob = await response.blob();
             if (blob.size === 0) {
-                throw new Error('El archivo recibido est· vacÌo');
+                throw new Error('El archivo recibido est√° vac√≠o');
             }
 
             saveAs(blob, 'Plantilla_Boletas.xlsx');

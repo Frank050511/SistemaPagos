@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+ï»¿import { useState, useEffect, useCallback } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { saveAs } from 'file-saver';
 
@@ -36,7 +36,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
         fetchPlanillas();
     }, [fetchPlanillas, reloadTrigger]);
 
-    // Función para descargar una planilla
+    // FunciÃ³n para descargar una planilla
     const handleDescargarPlanilla = async (rutaArchivo, nombrePlanilla) => {
         try {
             const response = await fetch(`https://localhost:7258/api/planillas/descargar?ruta=${encodeURIComponent(rutaArchivo)}`, {
@@ -56,7 +56,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
         }
     };
 
-    // Función para eliminar una planilla
+    // FunciÃ³n para eliminar una planilla
     const handleEliminarPlanilla = async (idPlanilla) => {
         try {
             const response = await fetch(`https://localhost:7258/api/planillas/${idPlanilla}`, {
@@ -88,10 +88,10 @@ const TablaPlanillas = ({ reloadTrigger }) => {
             fechaCorte.includes(searchTerm);
     });
 
-    // Calcular el total de páginas
+    // Calcular el total de pÃ¡ginas
     const totalPages = Math.ceil(filteredPlanillas.length / itemsPerPage);
 
-    // Obtener planillas para la página actual
+    // Obtener planillas para la pÃ¡gina actual
     const currentPlanillas = filteredPlanillas.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
@@ -102,7 +102,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
 
     return (
         <div className="space-y-4">
-            {/* Barra de búsqueda */}
+            {/* Barra de bÃºsqueda */}
             <div className="relative max-w-md">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
@@ -174,7 +174,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
                 </table>
             </div>
 
-            {/* Paginación */}
+            {/* PaginaciÃ³n */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
                     <div className="flex flex-1 justify-between sm:hidden">
@@ -256,7 +256,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
                                     disabled={currentPage === totalPages}
                                     className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                                 >
-                                    <span className="sr-only">Última</span>
+                                    <span className="sr-only">Ãšltima</span>
                                     &raquo;
                                 </button>
                             </nav>

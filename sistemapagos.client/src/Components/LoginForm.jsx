@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const LoginForm = () => {
@@ -25,7 +25,7 @@ const LoginForm = () => {
             if (!response.ok) throw new Error(data.message || 'Error en login');
             console.log("Respuesta del servidor:", data);
             // Guarda datos y redirige
-            // Verificaci�n expl�cita del tipo de dato
+            // Verificación explícita del tipo de dato
             const isAdmin = Boolean(data.usuario.esAdmin);
             console.log("EsAdmin:", isAdmin, typeof isAdmin);
 
@@ -50,7 +50,7 @@ const LoginForm = () => {
 
                 <div>
                     <label htmlFor="codigoEmpleado" className="block text-sm/6 font-medium text-gray-100">
-                        Codigo de Empleado:
+                        Código de Empleado:
                     </label>
                     <div className="mt-2">
                         <input

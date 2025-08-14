@@ -137,7 +137,7 @@ public class PlanillasController : ControllerBase
         return Ok(planillas);
     }
 
-    // GET: api/planillas/descargar Se usa para descargar la planilla quese ha subido previamente
+    // GET: api/planillas/descargar Se usa para descargar una de las planillas que se han subido previamente
     [HttpGet("descargar")]
     public IActionResult DescargarPlanilla([FromQuery] string ruta)
     {
