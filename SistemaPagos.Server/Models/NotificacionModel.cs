@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class NotificacionModel
 {
+    // todas esaas son las propiedades que tiene cada notificacion, o diciendolo de otra forma, son los campos
+    //de la tabla Notificaciones en la base de datos
     [Key]
     public int IdNotificacion { get; set; }
 

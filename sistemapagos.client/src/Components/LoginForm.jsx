@@ -35,7 +35,7 @@ const LoginForm = () => {
             navigate(isAdmin ? '/admin' : '/empleado');
 
         } catch (err) {
-            setError(err.message || 'Credenciales incorrectas');
+            setError(err.message && 'Credenciales incorrectas');
         }
     };
 
@@ -69,11 +69,6 @@ const LoginForm = () => {
                         <label htmlFor="clave" className="block text-sm/6 font-medium text-gray-100">
                             Clave:
                         </label>
-                        <div className="text-sm">
-                            <a href="#" className="font-semibold text-indigo-400 hover:text-indigo-300">
-                                Olvidaste tu clave?
-                            </a>
-                        </div>
                     </div>
                     <div className="mt-2">
                         <input

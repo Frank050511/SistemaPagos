@@ -20,7 +20,7 @@ public class PlanillasController : ControllerBase
         _env = env;
     }
 
-    // GET: api/planillas/plantilla
+    // este endpoint es el que se encarga de generar la plantilla utilizando ClosedXML y descargarla
     [HttpGet("plantilla")]
     public IActionResult DescargarPlantilla()
     {
@@ -28,27 +28,27 @@ public class PlanillasController : ControllerBase
         {
             using (var memoryStream = new MemoryStream())
             {
-                // Crear libro de trabajo
+                // aqui se crea el archivo de excel en el que se crea la estructura de la plantilla
                 using (var workbook = new XLWorkbook())
                 {
-                    var worksheet = workbook.Worksheets.Add("PlantillaBoletas");
+                    var worksheet = workbook.Worksheets.Add("PlantillaBoletas"); //crea la hoja de calculo
 
-                    // Encabezados
+                    // Estos son los encabezados de la plantilla
                     var headers = new string[] {
                         "CodigoEmpleado", "NombreEmpleado", "FechaCorte",
                         "SalarioBruto", "ISSS", "AFP", "Renta", "SalarioNeto"
                     };
 
-                    // Formato de encabezados
+                    // Configuracion del formato de los encabezados
                     for (int i = 0; i < headers.Length; i++)
                     {
                         var cell = worksheet.Cell(1, i + 1);
-                        cell.Value = headers[i];
-                        cell.Style.Font.Bold = true;
-                        cell.Style.Fill.BackgroundColor = XLColor.LightGray;
+                        cell.Value = headers[i];    //nombre del encabezado
+                        cell.Style.Font.Bold = true; //negrita
+                        cell.Style.Fill.BackgroundColor = XLColor.LightGray; //color de fondo
                     }
 
-                    // Datos de ejemplo (fila 2)
+                    // Datos de ejemplo. Se deben eliminar al usar la plantilla
                     worksheet.Cell(2, 1).Value = "EMP001";
                     worksheet.Cell(2, 2).Value = "Juan Pérez";
                     worksheet.Cell(2, 3).Value = DateTime.Now.ToString("yyyy-MM-dd");
@@ -58,7 +58,7 @@ public class PlanillasController : ControllerBase
                     worksheet.Cell(2, 7).Value = 100.00;
                     worksheet.Cell(2, 8).Value = 797.50;
 
-                    // Formato de números
+                    // Formato de números. Aqui se define el formato de moneda para las columnas correspondientes
                     worksheet.Column(4).Style.NumberFormat.Format = "$#,##0.00";
                     worksheet.Column(5).Style.NumberFormat.Format = "$#,##0.00";
                     worksheet.Column(6).Style.NumberFormat.Format = "$#,##0.00";
@@ -68,13 +68,13 @@ public class PlanillasController : ControllerBase
                     // Autoajustar columnas
                     worksheet.Columns().AdjustToContents();
 
-                    // Guardar en el MemoryStream
+                    // Guarda el archivo en el MemoryStream
                     workbook.SaveAs(memoryStream);
                 }
 
-                memoryStream.Position = 0; // Resetear posición
+                memoryStream.Position = 0; // Resetear posición para leer desde el inicio
 
-                // Devolver archivo
+                // Envia el archivo para que pueda ser descargado
                 return File(
                     memoryStream.ToArray(),
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -88,26 +88,27 @@ public class PlanillasController : ControllerBase
         }
     }
 
-    // Se usa para poder subir una planilla al sistema
+    // Este endpoint permite cargar o subir un archivo al sistema. El archivo sería la planilla de pagos
     [HttpPost("cargar")]
     public async Task<IActionResult> CargarPlanilla([FromForm] PlanillaCargaDto dto)
     {
         if (dto.Archivo == null || dto.Archivo.Length == 0)
-            return BadRequest("Archivo no válido");
+            return BadRequest("Archivo no válido"); //indica que el archivo no es valido si no contiene datos
 
         var detalles = await _ProcesarExcel(dto.Archivo);
         if (detalles.Count == 0)
             return BadRequest("El Excel no contiene datos válidos");
 
-        string rutaArchivo = _GuardarArchivo(dto.Archivo);
+        string rutaArchivo = _GuardarArchivo(dto.Archivo); // Guarda el archivo en el servidor
 
+        //Llena los campos de la base de datos para registrar la planilla.
         var planilla = new PlanillaModel
         {
-            NombrePlanilla = Path.GetFileNameWithoutExtension(dto.Archivo.FileName),
-            FechaCarga = DateTime.Now,
-            RutaArchivo = rutaArchivo,
-            Activo = true,
-            FechaCorte = dto.FechaCorte,
+            NombrePlanilla = Path.GetFileNameWithoutExtension(dto.Archivo.FileName), //obtiene el nombre del archivo sin la extension
+            FechaCarga = DateTime.Now, //fecha en la que se carga la planilla. obtiene la fecha automáticamente
+            RutaArchivo = rutaArchivo, //guarda la ruta del archivo en el servidor
+            Activo = true,             //Si es true significa que la planilla se puede ver, si es false significa que está "eliminada"
+            FechaCorte = dto.FechaCorte,//Fecha de corte de la planilla, que se obtiene del formulario
             IdUsuario = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
             Detalles = detalles
         };
@@ -117,10 +118,11 @@ public class PlanillasController : ControllerBase
 
         return Ok(new { id = planilla.IdPlanilla });
     }
-    // GET: api/planillas manda a llamar a las plantillas
+    // GET: api/planillas manda a llamar a las planillas
     [HttpGet]
     public async Task<IActionResult> GetPlanillas()
     {
+        //Crea la consulta para obtener las planillas activas
         var planillas = await _context.Planillas
             .Where(p => p.Activo)
             .Select(p => new {
@@ -135,7 +137,7 @@ public class PlanillasController : ControllerBase
         return Ok(planillas);
     }
 
-    // GET: api/planillas/descargar se usa para descargar la planilla
+    // GET: api/planillas/descargar Se usa para descargar la planilla quese ha subido previamente
     [HttpGet("descargar")]
     public IActionResult DescargarPlanilla([FromQuery] string ruta)
     {
@@ -146,7 +148,7 @@ public class PlanillasController : ControllerBase
         return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Path.GetFileName(ruta));
     }
 
-    // DELETE: api/planillas/{id} elimina la planilla de la vista
+    // DELETE: api/planillas/{id} elimina la planilla de la vista por medio del id
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePlanilla(int id)
     {
@@ -161,19 +163,21 @@ public class PlanillasController : ControllerBase
         return NoContent();
     }
 
+    // Este método privado procesa el archivo Excel y extrae los detalles de la planilla para guardarlos en la base de datos
     private async Task<List<DetallePlanillaModel>> _ProcesarExcel(IFormFile archivo)
     {
-        var detalles = new List<DetallePlanillaModel>();
+        var detalles = new List<DetallePlanillaModel>(); // Lista para almacenar los detalles de la planilla en la tabla Detalles
 
         using (var stream = new MemoryStream())
         {
             await archivo.CopyToAsync(stream);
 
-            using (var workbook = new XLWorkbook(stream))
+            using (var workbook = new XLWorkbook(stream)) // Abre el archivo Excel de la planilla
             {
                 var worksheet = workbook.Worksheet(1); // Primera hoja
                 var rows = worksheet.RowsUsed().Skip(1); // Saltar encabezados
 
+                // Recorre cada fila del archivo Excel para extraer los datos
                 foreach (var row in rows)
                 {
                     string codigoEmpleado = row.Cell(1).GetString();
@@ -185,6 +189,7 @@ public class PlanillasController : ControllerBase
 
                     detalles.Add(new DetallePlanillaModel
                     {
+                        //ingresa los datos de las celdas en la tabla Detalles
                         IdUsuario = empleado.IdUsuario,
                         SalarioBruto = row.Cell(4).GetValue<decimal>(),
                         Isss = row.Cell(5).GetValue<decimal>(),
@@ -199,9 +204,10 @@ public class PlanillasController : ControllerBase
         return detalles;
     }
 
+    // Este método privado guarda el archivo en una carpeta del servidor y retorna la ruta donde se guardó
     private string _GuardarArchivo(IFormFile archivo)
     {
-        string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "planillas");
+        string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "planillas"); // Carpeta donde se guardan los archivos
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
 

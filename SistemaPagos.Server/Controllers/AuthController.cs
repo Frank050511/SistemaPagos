@@ -14,45 +14,48 @@ public class AuthController : ControllerBase
     private readonly ApplicationDbContext _context;
     private readonly IConfiguration _config;
 
+    
     public AuthController(ApplicationDbContext context, IConfiguration config)
     {
         _context = context;
         _config = config;
     }
 
+    //este endpoint registra un nuevo usuario en el sistema. Esto está pensado para una actualizacion en el futuro,
+    //ya que el registro de usuarios no debería ser administrado por un administrador de nominas.
     [HttpPost("registrar")]
     public async Task<IActionResult> Registrar([FromBody] RegistrarUsuarioDto registrarDto)
     {
-        // Validar si el código de empleado ya existe
+        // Valida si el código de empleado ya existe
         if (await _context.Usuarios.AnyAsync(u => u.CodigoEmpleado == registrarDto.CodigoEmpleado))
         {
             return BadRequest("El código de empleado ya está registrado");
         }
 
-        // Validar el modelo
+        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        // Crear nuevo usuario
+        // Crea un nuevo usuario para el sistema
         var usuario = new UsuarioModel
         {
             CodigoEmpleado = registrarDto.CodigoEmpleado,
             Nombre = registrarDto.Nombre,
-            Clave = BCrypt.Net.BCrypt.HashPassword(registrarDto.Clave),
+            Clave = BCrypt.Net.BCrypt.HashPassword(registrarDto.Clave), // hasheamos la clave para que no sea visible en la base de datos
             Activo = true,
             EsAdmin = registrarDto.EsAdmin
         };
 
-        // Guardar en la base de datos
+        // Guardamos en la base de datos los datos del usuario creado
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
 
-        // Generar token JWT
+        // Genera un token JWT para el usuario recién registrado
         var token = GenerateJwtToken(usuario);
 
-        // Retornar respuesta
+        // Retornamos la respuesta para confirmar el registro y el token exitoso
         return Ok(new
         {
             token,
@@ -66,10 +69,11 @@ public class AuthController : ControllerBase
         });
     }
 
+    // este endpoint permite a un usuario loguearse en el sistema y obtener un token JWT
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginDto loginDto)
     {
-        // 1. Validar usuario
+        // Valida el usuario para confirmar que la clave y el código de empleado ingresados son correctos
         var usuario = _context.Usuarios.FirstOrDefault(u => u.CodigoEmpleado == loginDto.CodigoEmpleado);
         if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDto.Clave, usuario.Clave))
             return Unauthorized("Credenciales invalidas");
@@ -77,10 +81,10 @@ public class AuthController : ControllerBase
         Console.WriteLine($"Usuario {usuario.CodigoEmpleado} - EsAdmin: {usuario.EsAdmin}"); // Log para depuración
 
 
-        // 2. Generar JWT
+        // Generar JWT para que pueda acceder a la pagina siguiente
         var token = GenerateJwtToken(usuario);
 
-        // 3. Retornar respuesta
+        
         return Ok(new
         {
             token,
@@ -94,11 +98,12 @@ public class AuthController : ControllerBase
         });
     }
 
+    //aquí se genera el token JWT para el usuario cuando inicia sesion o se registra
     private string GenerateJwtToken(UsuarioModel usuario)
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, usuario.IdUsuario.ToString()), 
             new Claim(ClaimTypes.Role, usuario.EsAdmin ? "admin" : "user")
         };
 
@@ -116,6 +121,7 @@ public class AuthController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
+
 
 public class LoginDto
 {

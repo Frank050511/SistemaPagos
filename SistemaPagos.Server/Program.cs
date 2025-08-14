@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Configuración JWT
+// Configuración de JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -27,25 +27,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Configuración Swagger
+// Configuración Swagger 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configuración de la base de datos MySQL
+// Configuración para la conexion con la base de datos MySQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
-// Configuración de CORS (versión mejorada)
+// Configuración de CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
         builder.WithOrigins(
-                "https://localhost:49957", // Frontend React
-                "http://localhost:3000"   // Alternativa común para React
+                "https://localhost:49957" // Frontend React
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -55,7 +54,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configura el pipeline HTTP
+// Configura el pipeline HTTP 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -66,9 +65,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-// ORDEN CORRECTO DE MIDDLEWARES:
 app.UseRouting();
-app.UseCors(); // Usa la política por defecto que configuramos
+app.UseCors(); 
 app.UseAuthentication();
 app.UseAuthorization();
 

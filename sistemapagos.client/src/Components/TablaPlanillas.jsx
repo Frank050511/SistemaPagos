@@ -177,8 +177,6 @@ const TablaPlanillas = ({ reloadTrigger }) => {
             {/* Paginación */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
-                    {/* ... (código de paginación existente) ... */}
-
                     <div className="flex flex-1 justify-between sm:hidden">
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -238,7 +236,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
                                         <button
                                             key={pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
-                                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'}`}
+                                            className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'text-gray-200 ring-1 ring-inset ring-gray-300 hover:bg-gray-50'}`}
                                         >
                                             {pageNum}
                                         </button>

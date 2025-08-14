@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
   public class UsuarioModel
   {
+    // todas esas son las propiedades que tiene cada usuario, o diciendolo de otra forma, son los campos
+    // de la tabla Usuarios en la base de datos
     [Key]
     public int IdUsuario { get; set; }
 

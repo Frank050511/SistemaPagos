@@ -6,7 +6,7 @@ public class ApplicationDbContext : DbContext
             : base(options)
         {
         }
-    //aquí se definen las entidades del modelo: DbSet<modelo>
+    //aquí se definen las entidades de los modelos: DbSet<modelo>
         public DbSet<UsuarioModel> Usuarios { get; set; } 
        public DbSet<PlanillaModel> Planillas { get; set; } 
         public DbSet<DetallePlanillaModel> Detalles { get; set; } 

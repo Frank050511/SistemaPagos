@@ -6,6 +6,8 @@ using System.Globalization;
 
 public class PlanillaModel
  {
+    //todas esas son las propiedades que tiene cada planilla, o diciendolo de otra forma, son los campos
+    //de la tabla Planillas en la base de datos
     [Key]
     public int IdPlanilla { get; set; }
 

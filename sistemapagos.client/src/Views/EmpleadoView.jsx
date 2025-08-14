@@ -90,7 +90,7 @@ export default function Empleado() {
                                 id="anio"
                                 value={searchParams.anio}
                                 onChange={(e) => setSearchParams(prev => ({ ...prev, anio: e.target.value }))}
-                                className="p-2 rounded text-white border border-gray-300"
+                                className="p-2 rounded text-gray-400 border border-gray-300"
                                 min="2000"
                                 max="2100"
                             />
@@ -103,7 +103,7 @@ export default function Empleado() {
                                 id="mes"
                                 value={searchParams.mes}
                                 onChange={(e) => setSearchParams(prev => ({ ...prev, mes: e.target.value }))}
-                                className="p-2 rounded text-white border border-gray-300"
+                                className="p-2 rounded text-gray-400 border border-gray-300"
                             >
                                 {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                                     <option key={month} value={month}>
@@ -111,14 +111,6 @@ export default function Empleado() {
                                     </option>
                                 ))}
                             </select>
-                        </div>
-                        <div className="self-end">
-                            <button
-                                type="submit"
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                            >
-                                Buscar
-                            </button>
                         </div>
                     </form>
                 </div>
@@ -139,30 +131,32 @@ export default function Empleado() {
                                 key={`${date}-${index}`}
                                 title={`Boleta - ${formatDate(date)}`}
                             >
-                                <table className="min-w-full bg-white">
-                                    <thead>
-                                        <tr>
-                                            <th className="px-4 py-2 border">Codigo Empleado</th>
-                                            <th className="px-4 py-2 border">Nombre</th>
-                                            <th className="px-4 py-2 border">Salario Bruto</th>
-                                            <th className="px-4 py-2 border">ISSS</th>
-                                            <th className="px-4 py-2 border">AFP</th>
-                                            <th className="px-4 py-2 border">Renta</th>
-                                            <th className="px-4 py-2 border">Salario Neto</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td className="px-4 py-2 border">{boleta.codigoEmpleado}</td>
-                                            <td className="px-4 py-2 border">{boleta.nombreEmpleado}</td>
-                                            <td className="px-4 py-2 border">${boleta.salarioBruto?.toFixed(2) ?? '0.00'}</td>
-                                            <td className="px-4 py-2 border">${boleta.isss?.toFixed(2) ?? '0.00'}</td>
-                                            <td className="px-4 py-2 border">${boleta.afp?.toFixed(2) ?? '0.00'}</td>
-                                            <td className="px-4 py-2 border">${boleta.renta?.toFixed(2) ?? '0.00'}</td>
-                                            <td className="px-4 py-2 border font-bold">${boleta.salarioNeto?.toFixed(2) ?? '0.00'}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-max bg-white">
+                                        <thead className="bg-gray-100">
+                                            <tr>
+                                                <th className="px-4 py-2 border">Código Empleado</th>
+                                                <th className="px-4 py-2 border">Nombre</th>
+                                                <th className="px-4 py-2 border">Salario Bruto</th>
+                                                <th className="px-4 py-2 border">ISSS</th>
+                                                <th className="px-4 py-2 border">AFP</th>
+                                                <th className="px-4 py-2 border">Renta</th>
+                                                <th className="px-4 py-2 border">Salario Neto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td className="px-4 py-2 border">{boleta.codigoEmpleado}</td>
+                                                <td className="px-4 py-2 border">{boleta.nombreEmpleado}</td>
+                                                <td className="px-4 py-2 border">${boleta.salarioBruto?.toFixed(2) ?? '0.00'}</td>
+                                                <td className="px-4 py-2 border">${boleta.isss?.toFixed(2) ?? '0.00'}</td>
+                                                <td className="px-4 py-2 border">${boleta.afp?.toFixed(2) ?? '0.00'}</td>
+                                                <td className="px-4 py-2 border">${boleta.renta?.toFixed(2) ?? '0.00'}</td>
+                                                <td className="px-4 py-2 border font-bold">${boleta.salarioNeto?.toFixed(2) ?? '0.00'}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </BoletaCard>
                         ))
                     )

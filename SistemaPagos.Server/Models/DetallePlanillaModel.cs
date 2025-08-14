@@ -4,6 +4,8 @@ using SistemaPagos.Server.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 public class DetallePlanillaModel
 {
+    // todas esaas son las propiedades que tiene cada detalle de la planilla, o diciendolo de otra forma, son los campos
+    //de la tabla Detalles en la base de datos
     [Key]
     public int IdDetalle { get; set; }
 
