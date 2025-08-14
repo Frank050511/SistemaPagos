@@ -1,13 +1,14 @@
-﻿// Archivo: Services/EmailService.cs
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace SistemaPagos.Server.Services;
 
+
 public interface IEmailService
 {
+    
     Task EnviarCorreoAsync(string destinatario, string asunto, string cuerpoHtml);
 }
 
@@ -21,19 +22,21 @@ public class EmailService : IEmailService
         _config = config;
         _logger = logger;
     }
-
+    //Configura los datos que enviará el correo electronico y lo envia
     public async Task EnviarCorreoAsync(string destinatario, string asunto, string cuerpoHtml)
     {
         try
         {
             using (var smtpClient = new SmtpClient(_config["Smtp:Host"]))
             {
+                // Configura el SMTP con los datos del servidor y las credenciales
                 smtpClient.Port = int.Parse(_config["Smtp:Port"] ?? "587");
                 smtpClient.Credentials = new NetworkCredential(
                     _config["Smtp:Username"],
                     _config["Smtp:Password"]);
                 smtpClient.EnableSsl = bool.Parse(_config["Smtp:EnableSsl"] ?? "true");
 
+                // Crea el mensaje de correo
                 var mensaje = new MailMessage
                 {
                     From = new MailAddress(
@@ -48,12 +51,12 @@ public class EmailService : IEmailService
                 await smtpClient.SendMailAsync(mensaje);
 
                 _logger.LogInformation($"Correo enviado a {destinatario}");
-            } // El SmtpClient se destruye automáticamente aquí
+            } 
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error al enviar correo a {destinatario}");
-            throw; // Opcional: relanza la excepción si deseas manejarla en el controlador
+            throw; 
         }
     }
 }

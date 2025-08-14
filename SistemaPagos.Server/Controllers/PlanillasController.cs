@@ -119,7 +119,7 @@ public class PlanillasController : ControllerBase
         _context.Planillas.Add(planilla);
         await _context.SaveChangesAsync();
 
-        // Obtener correos de los usuarios afectados
+        // Obtiene los correos de los usuarios
         var correos = await _context.Detalles
             .Where(d => d.Planilla.IdPlanilla == planilla.IdPlanilla)
             .Select(d => d.Usuario.Correo)
@@ -127,13 +127,13 @@ public class PlanillasController : ControllerBase
             .Distinct()
             .ToListAsync();
 
-        // Enviar correos (en segundo plano)
+        // Envia los correos
         foreach (var correo in correos)
         {
             _ = _emailService.EnviarCorreoAsync(
-                correo!,
-                "Nueva boleta de pago disponible",
-                $"<p>Se ha cargado una nueva boleta para el período {planilla.FechaCorte:MMMM yyyy}</p>"
+                correo!, //correo del usuario
+                "Nueva boleta de pago disponible", // Asunto del correo
+                $"<p>Se ha cargado una nueva boleta de pago para el período {planilla.FechaCorte:MMMM yyyy}</p>" //cuerpo
             );
         }
 

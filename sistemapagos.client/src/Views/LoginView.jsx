@@ -1,6 +1,8 @@
 ﻿import "../index.css";
 import LoginForm from "../Components/LoginForm.jsx";
 
+//Componente de la vista del login. Aqui se manda a llamar el componente que contiene el formulario de inicio de sesion. Si en un fturo
+//se desea agregar cambios como rcuperacion de contraseña se debe mandar a llamar en este componente.
 export default function Login() {
     return (
         <>

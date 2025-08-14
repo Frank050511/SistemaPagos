@@ -28,6 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+//Configura los servicios de smtp 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configuración Swagger 

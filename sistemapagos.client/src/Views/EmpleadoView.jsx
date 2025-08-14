@@ -1,27 +1,30 @@
-﻿// ... resto de imports
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import "../index.css"
 import LogoutButton from '../Components/LogoutButton.jsx'
 import BoletaCard from '../Components/BoletaCard.jsx'
 export default function Empleado() {
+    // Estados para manejar las boletas, el estado de carga y los parámetros de búsqueda
     const [boletas, setBoletas] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); 
     const [searchParams, setSearchParams] = useState({
-        anio: new Date().getFullYear(),
-        mes: new Date().getMonth() + 1
+        año: new Date().getFullYear(),
+        mes: new Date().getMonth() + 1 //Ya que getMonth() devuelve 0-11, agregamos 1 para que al enviar el parámetro sea de 1 a 12
     });
 
     const fetchBoletas = useCallback(async () => {
         try {
-            setLoading(true);
+            setLoading(true); 
+
+            // Obtenemos los parametros de busqueda, los cuales son el año y el mes
             const queryParams = new URLSearchParams({
-                anio: searchParams.anio,
+                año: searchParams.año,
                 mes: searchParams.mes
             }).toString();
 
-            const response = await fetch(`https://localhost:7258/api/Boletas?${queryParams}`, {
+            const response = await fetch(`https://localhost:7258/api/Boletas?${queryParams}`, { //conectamos el endpoint de la api y le mandamos
+                                                                                               //el mes y el año para el filtro con queryParams
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json'
@@ -39,26 +42,27 @@ export default function Empleado() {
         } finally {
             setLoading(false);
         }
-    }, [searchParams.anio, searchParams.mes]);
+    }, [searchParams.año, searchParams.mes]); //la funcion se vuelve a rederizar si cambian los parámetros de búsqueda
 
     useEffect(() => {
         fetchBoletas();
-    }, [fetchBoletas]);
+    }, [fetchBoletas]); // Llamamos a la función fetchBoletas al cargar el componente
 
-    const handleSearch = (e) => {
-        e.preventDefault();
+    const handleSearch = (e) => { 
+        e.preventDefault(); //sirve para evitar que la pagina se recargue al enviar el formulario y que solo se actualicen los datos
     };
 
+    //Cambiamos el formato de la fecha para que se muestre así: 1 enero 2025
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
     };
 
-    // Agrupar por Corte
+    // agrupar por fecha de corte
     const groupByDate = (boletas) => {
         return boletas.reduce((acc, boleta) => {
-            const dateKey = boleta.corte; // Ojo con minúscula si backend devuelve camelCase
-            if (!acc[dateKey]) {
+            const dateKey = boleta.corte; // 
+            if (!acc[dateKey]) { //dateKey es el campo que contiene la fecha de corte
                 acc[dateKey] = [];
             }
             acc[dateKey].push(boleta);
@@ -78,18 +82,18 @@ export default function Empleado() {
             </header>
 
             <main className="mx-auto max-w-7xl px-4 py-6">
-                {/* Formulario búsqueda */}
+                {/* Formulario de búsqueda por año y mes */}
                 <div className="bg-gray-700 p-4 rounded-lg mb-6">
                     <form onSubmit={handleSearch} className="flex flex-wrap gap-4">
                         <div>
-                            <label htmlFor="anio" className="block text-sm font-medium text-white mb-1">
+                            <label htmlFor="año" className="block text-sm font-medium text-white mb-1">
                                 Año
                             </label>
                             <input
                                 type="number"
-                                id="anio"
-                                value={searchParams.anio}
-                                onChange={(e) => setSearchParams(prev => ({ ...prev, anio: e.target.value }))}
+                                id="año"
+                                value={searchParams.año}
+                                onChange={(e) => setSearchParams(prev => ({ ...prev, año: e.target.value }))}
                                 className="p-2 rounded text-gray-400 border border-gray-300"
                                 min="2000"
                                 max="2100"
@@ -115,7 +119,7 @@ export default function Empleado() {
                     </form>
                 </div>
 
-                {/* Resultados */}
+                {/* Muestra las boletas correspondientes al mes y año seleccionados */}
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -125,6 +129,7 @@ export default function Empleado() {
                         No se encontraron boletas para el periodo seleccionado
                     </div>
                 ) : (
+                            {/* Agrupamos las boletas por fecha de corte y las mostramos en tarjetas */ },
                     Object.entries(groupedBoletas).map(([date, boletasForDate]) =>
                         boletasForDate.map((boleta, index) => (
                             <BoletaCard

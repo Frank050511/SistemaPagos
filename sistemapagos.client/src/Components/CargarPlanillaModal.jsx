@@ -10,7 +10,7 @@ export default function CargarPlanillaModal({ isOpen, onClose, onUploadSuccess }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        setIsSubmitting(true)
+        setIsSubmitting(true) //deshabilita el botón de enviar mientras se procesa la solicitud
         setError(null)
 
         try {
@@ -19,21 +19,21 @@ export default function CargarPlanillaModal({ isOpen, onClose, onUploadSuccess }
             }
 
             const formData = new FormData()
-            formData.append('Archivo', file)
+            formData.append('Archivo', file) //envia el nombre del archivo a AdminView que es el que tiene el endpoint para cargar la planilla
             formData.append('FechaCorte', fechaCorte)
 
-            await onUploadSuccess(formData)
+            await onUploadSuccess(formData) //llama a la función que maneja la subida de la planilla en AdminView
             onClose()
         } catch (err) {
             console.error('Error al subir planilla:', err)
             setError(err.message)
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false) //habilita el botón de enviar nuevamente
         }
     }
 
     return (
-        <Transition appear show={isOpen} as={Fragment}>
+        <Transition appear show={isOpen} as={Fragment}> {/* Transition para animar la aparición del modal utilizado con tailwind*/} }
             <Dialog as="div" className="relative z-10" onClose={onClose}>
                 <Transition.Child
                     as={Fragment}

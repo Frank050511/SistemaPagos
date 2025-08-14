@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react';
 import '../index.css';
 
+// Componente BoletaCard que muestra una tarjeta con título y contenido colapsable
 const BoletaCard = ({ title, children }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -11,7 +12,7 @@ const BoletaCard = ({ title, children }) => {
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <span className="text-lg">{title}</span>
-                <span className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+                <span className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}> {/*gira el icono cuando se abre la tarjeta o se cierra*/} }
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>

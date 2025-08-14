@@ -5,13 +5,14 @@ import { saveAs } from 'file-saver';
 import CargarPlanillaModal from '../Components/CargarPlanillaModal.jsx';
 
 export default function PlanillasAdmin() {
+    
     const [isDownloading, setIsDownloading] = useState(false);
     const [error, setError] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
-    const [reloadTrigger, setReloadTrigger] = useState(0);
+    const [reloadTrigger, setReloadTrigger] = useState(0);//sirve para recargar la tabla de planillas cuando se sube una nueva planilla
 
     const handleDescargarPlantilla = async () => {
-        setIsDownloading(true);
+        setIsDownloading(true); //inabilita el botón de descarga si es true
         setError(null);
 
         try {
@@ -19,7 +20,7 @@ export default function PlanillasAdmin() {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' //valida que el servidor envíe un archivo Excel
                 },
                 credentials: 'include'
             });
@@ -29,7 +30,7 @@ export default function PlanillasAdmin() {
                 throw new Error(errorText || 'Error al descargar la plantilla');
             }
 
-            const blob = await response.blob();
+            const blob = await response.blob(); //generamos un blob con el contenido del archivo que se va a descargar
             if (blob.size === 0) {
                 throw new Error('El archivo recibido está vacío');
             }
@@ -39,10 +40,10 @@ export default function PlanillasAdmin() {
             console.error('Error al descargar:', err);
             setError(err.message);
         } finally {
-            setIsDownloading(false);
+            setIsDownloading(false); //habilita el botón de descarga nuevamente
         }
     };
-
+    //carga la planilla al servidor cuando se sube un archivo desde el modal
     const handleUploadSuccess = async (formData) => {
         try {
             const response = await fetch('https://localhost:7258/api/planillas/cargar', {
@@ -59,8 +60,8 @@ export default function PlanillasAdmin() {
                 throw new Error(errorData.message || 'Error al cargar la planilla');
             }
 
-            setReloadTrigger(prev => prev + 1);
-            setShowUploadModal(false);
+            setReloadTrigger(prev => prev + 1); // Incrementamos el trigger para recargar la tabla de planillas
+            setShowUploadModal(false); //cierra el modal despues de subir la planilla
             setError(null);
         } catch (err) {
             setError(err.message);
@@ -105,10 +106,10 @@ export default function PlanillasAdmin() {
                         </div>
                     )}
 
-                    <TablaPlanillas reloadTrigger={reloadTrigger} />
+                    <TablaPlanillas reloadTrigger={reloadTrigger} /> {/* Pasamos el trigger de recarga a la tabla de planillas */} 
                 </div>
             </main>
-
+            {/*mandamos a llamar el modal para cargar la planila si showUploadModal es true*/ }
             <CargarPlanillaModal
                 isOpen={showUploadModal}
                 onClose={() => {

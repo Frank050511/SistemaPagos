@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 const LoginForm = () => {
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate(); //redirige al usuario a la pagina correspondiente después de iniciar sesión
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,16 +23,13 @@ const LoginForm = () => {
             const data = await response.json();
 
             if (!response.ok) throw new Error(data.message || 'Error en login');
-            console.log("Respuesta del servidor:", data);
-            // Guarda datos y redirige
-            // Verificación explícita del tipo de dato
+
             const isAdmin = Boolean(data.usuario.esAdmin);
-            console.log("EsAdmin:", isAdmin, typeof isAdmin);
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.usuario));
 
-            navigate(isAdmin ? '/admin' : '/empleado');
+            navigate(isAdmin ? '/admin' : '/empleado'); // Redirige al usuario según su rol
 
         } catch (err) {
             setError(err.message && 'Credenciales incorrectas');

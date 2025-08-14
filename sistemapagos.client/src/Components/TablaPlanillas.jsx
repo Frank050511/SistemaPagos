@@ -8,7 +8,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const itemsPerPage = 5;
+    const itemsPerPage = 5; // Número de planillas que se muestran en la tabla por página
 
     const fetchPlanillas = useCallback(async () => {
         try {
@@ -34,7 +34,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
 
     useEffect(() => {
         fetchPlanillas();
-    }, [fetchPlanillas, reloadTrigger]);
+    }, [fetchPlanillas, reloadTrigger]); // Vuelve a cargar las planillas cuando cambia reloadTrigger
 
     // Función para descargar una planilla
     const handleDescargarPlanilla = async (rutaArchivo, nombrePlanilla) => {
@@ -50,13 +50,13 @@ const TablaPlanillas = ({ reloadTrigger }) => {
             }
 
             const blob = await response.blob();
-            saveAs(blob, nombrePlanilla);
+            saveAs(blob, nombrePlanilla); // Usamos el nombre original del archivo para la descarga
         } catch (err) {
             setError(err.message);
         }
     };
 
-    // Función para eliminar una planilla
+    // Función para eliminar una planilla a través de su ID (no la elimina del servidor, solo de la vista).
     const handleEliminarPlanilla = async (idPlanilla) => {
         try {
             const response = await fetch(`https://localhost:7258/api/planillas/${idPlanilla}`, {
@@ -77,7 +77,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
         }
     };
 
-    // Filtrar planillas de manera segura
+    // Filtrar planillas al utilizar la barra de búsqueda
     const filteredPlanillas = planillas.filter(planilla => {
         if (!planilla || typeof planilla !== 'object') return false;
 
@@ -111,7 +111,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => {
-                        setSearchTerm(e.target.value);
+                        setSearchTerm(e.target.value); 
                         setCurrentPage(1);
                     }}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -135,6 +135,7 @@ const TablaPlanillas = ({ reloadTrigger }) => {
                             </th>
                         </tr>
                     </thead>
+                    {/* Cuerpo de la tabla donde se agregan las planillas activas */}
                     <tbody className="bg-white divide-y divide-gray-200">
                         {currentPlanillas.length > 0 ? (
                             currentPlanillas.map((planilla) => (
@@ -195,10 +196,11 @@ const TablaPlanillas = ({ reloadTrigger }) => {
                     </div>
                     <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                         <div>
+                            {/* Muestra el rango de resultados actuales y el total de planillas */  }
                             <p className="text-sm text-gray-700">
                                 Mostrando <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> a{' '}
                                 <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredPlanillas.length)}</span> de{' '}
-                                <span className="font-medium">{filteredPlanillas.length}</span> resultados
+                                <span className="font-medium">{filteredPlanillas.length}</span> resultados 
                             </p>
                         </div>
                         <div>

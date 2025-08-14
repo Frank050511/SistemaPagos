@@ -1,4 +1,3 @@
-// src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginView from './Views/LoginView.jsx'
 import AdminView from './Views/AdminView.jsx'
@@ -10,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
     return user ? children : <Navigate to="/" replace />;
 };
 
-// Componente principal App
+// Componente principal. Aqui se definen las rutas existentes
 export const App = () => {
     return (
         <BrowserRouter>
